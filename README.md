@@ -1,70 +1,59 @@
-# Yemen Pharma Intelligence (PharmaYemen)
+# PharmaYemen — النسخة المعروضة القابلة للنقل
 
-**Pharmaceutical security through market intelligence.**
+**منصة ذكاء سوق الدواء في اليمن، مهيأة للتوثيق والمراجعة والعرض الرسمي.**
 
-PharmaYemen is a non-commercial Market Intelligence Platform designed for Yemen's pharmaceutical market. It connects supply and demand across verified pharmacies, hospitals, distributors, and clinics to detect shortages, identify surpluses, surface invisible inventory, and map viable alternatives.
+هذه المستودع هو نسخة مستقلة من منصة PharmaYemen لا تعتمد على خدمات تشغيل أو مصادقة أو تخزين خاصة ببيئة بعينها. يحتفظ بنماذج الأعمال والواجهة والبحث الدوائي والمطابقة ولوحة الإدارة ومخطط قاعدة البيانات، لكنه لا يتضمن أي بيانات تشغيلية أو بيانات دخول أو مفاتيح أو اتصال بقاعدة إنتاج.
 
-**Important Note:** This is an intelligence and matching platform, not an e-commerce storefront. It does not handle retail sales, payments, or commercial transactions.
+> **حدود المنصة:** PharmaYemen ليست صيدلية أو متجراً إلكترونياً ولا تنفذ بيعاً أو شراءً أو مدفوعات. وظيفتها تنظيم إشارات العرض والطلب، المساعدة في التعرف على الأدوية، كشف الشح أو الفائض، وإتاحة مؤشرات سوقية مضبوطة الصلاحيات.
 
----
+| المجال | ما يتضمنه هذا الإصدار |
+|---|---|
+| الواجهة | React 19 + Vite + Tailwind، عربية أولاً مع واجهة إنجليزية منظمة. |
+| وظائف السوق | عروض، طلبات، مطابقة اسمية، رسائل وإشعارات داخلية، وحوكمة إشارات السوق. |
+| الدواء | كتالوج موحد، أسماء علمية وتجارية، مواد فعالة، بحث عربي/إنجليزي متسامح مع الأخطاء ضمن البيانات المسجلة. |
+| الإدارة | اعتماد الكيانات، متابعة المطابقات، ولوحة مؤشرات إدارية للفئات العلاجية. |
+| البيانات | Drizzle ORM وترحيلات MySQL، من دون نسخ بيانات المستخدمين أو عمليات السوق. |
+| الهوية | حسابات محلية معيارية مع كلمات مرور مجزأة وجلسات JWT؛ قابلة للاستبدال لاحقاً بـ OIDC مؤسسي. |
 
-## 🎯 Core Objectives
+## البدء المحلي
 
-- **Visibility:** Make supply and demand visible to verified healthcare entities.
-- **Security:** Identify critical medicine shortages and locate emergency surpluses.
-- **Alternatives:** Map trade names to their canonical scientific (NEML) equivalents to surface safe alternatives when specific brands are unavailable.
-- **Data Integrity:** Preserve the canonical National Essential Medicines List (NEML) while supporting flexible, error-tolerant trade-name recognition.
-
-## ✨ Key Features
-
-- **Bilingual Interface:** Full Arabic (RTL) and English (LTR) support across all user journeys.
-- **Unified Medicine Recognition:** A robust, fuzzy-search engine that resolves trade names, scientific names, and active ingredients (including typos and incomplete inputs) to canonical catalog records.
-- **Contextual Entry:** Offers and Requests use a single, unified medicine-name field. Users receive contextual dropdown suggestions (with loading states) to aid identification.
-- **Safe Matching:** Explicitly selecting a suggestion saves the canonical `drugId`. Submitting without selection preserves the input as free text, ensuring the platform never invents or forces incorrect catalog records.
-- **Strict Data Governance:** The matching engine relies on 100% name-match constraints to prevent false positives, while the recognition engine supports flexible typo allowances.
-
-## 🛠 Tech Stack
-
-- **Frontend:** React 19, Vite, Tailwind CSS 4, shadcn/ui
-- **Backend:** Express 4, tRPC 11
-- **Database:** TiDB (MySQL), Drizzle ORM
-- **Authentication:** Manus OAuth
-
-## 🚀 Development & Setup
-
-This project uses `pnpm` as its package manager.
+يتطلب التشغيل Node.js 22+ وpnpm 10+ وMySQL 8+. انسخ `.env.example` إلى `.env`، وضع قيمة JWT قوية من 32 حرفاً على الأقل، ثم شغّل:
 
 ```bash
-# Install dependencies
+docker compose up -d mysql
 pnpm install
-
-# Start development server
-pnpm run dev
-
-# Run unit tests
-pnpm test
-
-# Run TypeScript checks
-pnpm run check
-
-# Build for production
-pnpm run build
+pnpm db:migrate
+pnpm dev
 ```
 
-## 📁 Project Structure
+لإنشاء حساب مدير أول، عيّن `BOOTSTRAP_ADMIN_EMAIL` قبل تسجيل هذا البريد في شاشة الدخول. لا تُرفع ملفات `.env` أو بيانات الإنتاج إلى المستودع.
 
-- `client/`: React frontend (Pages, Components, Contexts)
-- `server/`: Express backend, tRPC routers, and database helpers
-- `shared/`: Shared types and unified medicine recognition/matching logic
-- `drizzle/`: Database schema and migrations
-- `scripts/`: Verification and simulation scripts for medicine recognition
+## التحقق البرمجي
 
-## 🛡 Medicine Name Reference Integration
+```bash
+pnpm check
+pnpm test
+pnpm build
+NODE_ENV=production pnpm start
+```
 
-The platform includes a custom, reusable skill for integrating trade names safely:
-- **Separation of Concerns:** Trade names are stored as reference aliases (`tradeNames` JSON or separate table) and never overwrite canonical scientific records.
-- **Deterministic Ranking:** Suggestions are ranked by exact match, prefix match, contained match, and conservative typo match. Strengths act as a ranking bonus, not a prerequisite.
-- **Ambiguity Handling:** If a trade name maps to multiple distinct canonical formulations, it is marked as `ambiguous` and requires manual review rather than algorithmic guessing.
+## وثائق العرض
 
----
-*Built for Yemen's pharmaceutical security.*
+| الوثيقة | الغرض |
+|---|---|
+| [`OFFICIAL_PRESENTATION_BRIEF_AR.md`](OFFICIAL_PRESENTATION_BRIEF_AR.md) | ملخص رسمي لرسالة المنصة ووحداتها وضوابطها. |
+| [`README_AR.md`](README_AR.md) | شرح تفصيلي للتشغيل والنشر المعياري. |
+| [`PORTABLE_ARCHITECTURE_AR.md`](PORTABLE_ARCHITECTURE_AR.md) | فصل الطبقات عن البيئة المدارة ومعمارية الإصدار المستقل. |
+| [`PRODUCTION_READINESS_AND_SECURITY_REPORT_AR.md`](PRODUCTION_READINESS_AND_SECURITY_REPORT_AR.md) | تقرير المراجعة الأمنية وحالة الواجهة قبل استخراج هذه النسخة. |
+
+## البنية التقنية
+
+```text
+client/     واجهة React/Vite
+server/     خادم Express وواجهات tRPC
+shared/     منطق البحث والتعرف والمطابقة والحوكمة
+drizzle/    مخطط MySQL والترحيلات
+scripts/    أدوات التحقق والاستيراد الموثقة
+```
+
+للتفاصيل الكاملة، ابدأ بـ [`OFFICIAL_PRESENTATION_BRIEF_AR.md`](OFFICIAL_PRESENTATION_BRIEF_AR.md).
