@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: pharmayemen
+      MYSQL_USER: pharmayemen
+      MYSQL_PASSWORD: change-this-password
+      MYSQL_ROOT_PASSWORD: change-root-password
+    ports:
+      - "3306:3306"
+    volumes:
+      - pharmayemen_mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+volumes:
+  pharmayemen_mysql_data:
